@@ -80,7 +80,7 @@ const Login = () => {
             <Button 
             type="submit"
             label="Submit"
-            className="w-full h-10 bg-blue-700 text-white "
+            className="w-full h-10 bg-blue-700 text-white rounded-full"
             />
           </div>
         </form>

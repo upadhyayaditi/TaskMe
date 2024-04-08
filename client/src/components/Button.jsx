@@ -7,7 +7,7 @@ const Button = ({
   return (
     <button
     type={type || "button"}
-    className={clsx("bx-3 py-2 outline-none rounded", className)}
+    className={clsx("bx-3 py-2 outline-none", className)}
     >
         <span>
             {label}
