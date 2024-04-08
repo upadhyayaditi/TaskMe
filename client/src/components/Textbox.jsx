@@ -6,7 +6,7 @@ const Textbox = React.forwardRef(({
 }, ref) => {
     return (
         <div className='w-full flex flex-col gap-1 '>
-            {label && <label htmlFor={name} className='text-slate-800 '></label>}
+            {label && <label htmlFor={name} className='text-slate-800 '>{label}</label>}
 
             <div>
                 <input type={type} 
