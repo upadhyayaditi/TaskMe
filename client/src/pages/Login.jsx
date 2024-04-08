@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import Textbox from '../components/Textbox'
+import Button from '../components/Button'
 
 const Login = () => {
 
@@ -58,6 +59,28 @@ const Login = () => {
               required: "Email Address in required!"
             })}
             errors={errors.email ? errors.email.message : ""}
+            />
+
+          <Textbox 
+            placeholder="your password"
+            type="password"
+            name="password"
+            label="Password"
+            className="w-full rounded-full "
+            register={register("password", {
+              required: "Password in required!"
+            })}
+            errors={errors.password ? errors.password.message : ""}
+            />
+
+            <span className='text-sm text-gray-500 hover:text-blue-600 hover:underline cursor-pointer'>
+              Forget Password?
+            </span>
+
+            <Button 
+            type="submit"
+            label="Submit"
+            className="w-full h-10 bg-blue-700 text-white "
             />
           </div>
         </form>
