@@ -11,8 +11,8 @@ import { tasks } from "../assets/data";
 import Title from "../components/Title";
 import Button from "../components/Button";
 import { PRIOTITYSTYELS, TASK_TYPE } from "../utils";
-import AddUser from "../components/AddUser";
-import ConfirmatioDialog from "../components/Dialogs";
+// import AddUser from "../components/AddUser";
+// import ConfirmatioDialog from "../components/Dialogs";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
