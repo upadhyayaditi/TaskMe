@@ -12,7 +12,7 @@ import moment from "moment";
 import { summary } from "../assets/data";
 import clsx from "clsx";
 import { Chart } from "../components/Chart";
-import { BGS, PRIOTITYSTYELS, TASK_TYPE, getInitials } from "../utils/index";
+import { BGS, PRIOTITYSTYELS, TASK_TYPE, getInitials } from "../utils";
 import UserInfo from "../components/UserInfo";
 
 const TaskTable = ({ tasks }) => {
@@ -100,7 +100,7 @@ const UserTable = ({ users }) => {
         <th className='py-2'>Status</th>
         <th className='py-2'>Created At</th>
       </tr>
-    </thead>  
+    </thead>
   );
 
   const TableRow = ({ user }) => (
