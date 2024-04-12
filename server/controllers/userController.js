@@ -42,44 +42,43 @@ export const registerUser = async (req, res) => {
     }
   };
 
-export const loginUser = async (req, res, next) => {
+  export const loginUser = async (req, res) => {
     try {
-        const {email, password} = req.body
-
-        const user = await user.findOne({email})
-        if (!user) {
-            return res
-            .status(401)
-            .json({ status: false, message: "Invalid email or password." });
-        }
-
-        if (!user?.isActive) {
-            return res.status(401).json({
-              status: false,
-              message: "User account has been deactivated, contact the administrator",
-            });
-          }
-        
-        const isMatch = await user.matchPassword(password)
-
-        
-        if (user && isMatch) {
-            createJWT(res, user._id);
+      const { email, password } = req.body;
   
-            user.password = undefined;
+      const user = await User.findOne({ email });
   
-            res.status(200).json(user);
-        } else {
-            return res
-            .status(401)
-            .json({ status: false, message: "Invalid email or password" });
+      if (!user) {
+        return res
+          .status(401)
+          .json({ status: false, message: "Invalid email or password." });
+      }
+  
+      if (!user?.isActive) {
+        return res.status(401).json({
+          status: false,
+          message: "User account has been deactivated, contact the administrator",
+        });
+      }
+  
+      const isMatch = await user.matchPassword(password);
+  
+      if (user && isMatch) {
+        createJWT(res, user._id);
+  
+        user.password = undefined;
+  
+        res.status(200).json(user);
+      } else {
+        return res
+          .status(401)
+          .json({ status: false, message: "Invalid email or password" });
       }
     } catch (error) {
-        return res
-        .status(401)
-        .json({ status: false, message: error.message });
+      console.log(error);
+      return res.status(400).json({ status: false, message: error.message });
     }
-}
+  };
 
 
 
