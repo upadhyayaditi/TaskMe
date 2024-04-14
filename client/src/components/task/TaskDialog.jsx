@@ -1,104 +1,176 @@
-import { Listbox, Transition } from "@headlessui/react"
-import { Fragment, useEffect, useState } from "react"
-import { BsChevronExpand } from "react-icons/bs"
-import { summary } from "../../assets/data"
-import clsx from "clsx"
-import { getInitials } from "../../utils"
-import { MdCheck } from "react-icons/md"
-import { useGetTeamListQuery } from "../../redux/slices/api/userApiSlice"
+import React, { Fragment, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { AiFillCopyrightCircle, AiTwotoneFolderOpen } from "react-icons/ai"
+import { BsThreeDots } from "react-icons/bs"
+import { HiDuplicate } from "react-icons/hi"
+import { MdAdd, MdOutlineEdit } from "react-icons/md"
+import { RiDeleteBin6Line } from "react-icons/ri"
+import { Menu, Transition } from "@headlessui/react"
+import AddTask from "./AddTask"
+import AddSubTask from "./AddSubTask"
+import ConfirmatioDialog from "../Dialogs"
+import {
+    useDuplicateTaskMutation,
+    useTrashTaskMutation,
+} from "../../redux/slices/api/taskApiSlice"
+import { toast } from "sonner"
 
-const UserList = ({ setTeam, team }) => {
-    const { data, isLoading } = useGetTeamListQuery()
-    const [selectedUsers, setSelectedUsers] = useState([])
+const TaskDialog = ({ task }) => {
+    const [open, setOpen] = useState(false)
+    const [openEdit, setOpenEdit] = useState(false)
+    const [openDialog, setOpenDialog] = useState(false)
 
-    const handleChange = (el) => {
-        setSelectedUsers(el)
-        setTeam(el?.map((u) => u._id))
-    }
-    useEffect(() => {
-        if (team?.length < 1) {
-            data && setSelectedUsers([data[0]])
-        } else {
-            setSelectedUsers(team)
+    const navigate = useNavigate()
+
+    const [deleteTask] = useTrashTaskMutation()
+    const [duplicateTask] = useDuplicateTaskMutation()
+
+    const duplicateHandler = async () => {
+        try {
+            const res = await duplicateTask(task._id).unwrap()
+
+            toast.success(res?.message)
+
+            setTimeout(() => {
+                setOpenDialog(false)
+                window.location.reload()
+            }, 500)
+        } catch (err) {
+            console.log(err)
+            toast.error(err?.data?.message || err.message)
         }
-    }, [isLoading])
+    }
+
+    const deleteClicks = () => {
+        setOpenDialog(true)
+    }
+
+    const deleteHandler = async () => {
+        try {
+            const res = await deleteTask({
+                id: task._id,
+                isTrashed: "trash",
+            }).unwrap()
+
+            toast.success(res?.message)
+
+            setTimeout(() => {
+                setOpenDialog(false)
+                window.location.reload()
+            }, 500)
+        } catch (err) {
+            console.log(err)
+            toast.error(err?.data?.message || err.message)
+        }
+    }
+
+    const items = [
+        {
+            label: "Open Task",
+            icon: (
+                <AiTwotoneFolderOpen
+                    className="mr-2 h-5 w-5"
+                    aria-hidden="true"
+                />
+            ),
+            onClick: () => navigate(`/task/${task._id}`),
+        },
+        {
+            label: "Edit",
+            icon: <MdOutlineEdit className="mr-2 h-5 w-5" aria-hidden="true" />,
+            onClick: () => setOpenEdit(true),
+        },
+        {
+            label: "Add Sub-Task",
+            icon: <MdAdd className="mr-2 h-5 w-5" aria-hidden="true" />,
+            onClick: () => setOpen(true),
+        },
+        {
+            label: "Duplicate",
+            icon: <HiDuplicate className="mr-2 h-5 w-5" aria-hidden="true" />,
+            onClick: () => duplicateHandler(),
+        },
+    ]
 
     return (
-        <div>
-            <p className="text-gray-700">Assign Task To: </p>
-            <Listbox
-                value={selectedUsers}
-                onChange={(el) => handleChange(el)}
-                multiple
-            >
-                <div className="relative mt-1">
-                    <Listbox.Button className="relative w-full cursor-default rounded bg-white pl-3 pr-10 text-left px-3 py-2.5 2xl:py-3 border border-gray-300 sm:text-sm">
-                        <span className="block truncate">
-                            {selectedUsers?.map((user) => user.name).join(", ")}
-                        </span>
-
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                            <BsChevronExpand
-                                className="h-5 w-5 text-gray-400"
-                                aria-hidden="true"
-                            />
-                        </span>
-                    </Listbox.Button>
+        <>
+            <div>
+                <Menu as="div" className="relative inline-block text-left">
+                    <Menu.Button className="inline-flex w-full justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-600 ">
+                        <BsThreeDots />
+                    </Menu.Button>
 
                     <Transition
                         as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
                     >
-                        <Listbox.Options className="z-50 absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-                            {data?.map((user, index) => (
-                                <Listbox.Option
-                                    key={index}
-                                    className={({ active }) =>
-                                        `relative cursor-default select-none py-2 pl-10 pr-4. ${
-                                            active
-                                                ? "bg-amber-100 text-amber-900"
-                                                : "text-gray-900"
-                                        } `
-                                    }
-                                    value={user}
-                                >
-                                    {({ selected }) => (
-                                        <>
-                                            <div
-                                                className={clsx(
-                                                    "flex items-center gap-2 truncate",
-                                                    selected
-                                                        ? "font-medium"
-                                                        : "font-normal"
-                                                )}
+                        <Menu.Items className="absolute p-4 right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
+                            <div className="px-1 py-1 space-y-2">
+                                {items.map((el) => (
+                                    <Menu.Item key={el.label}>
+                                        {({ active }) => (
+                                            <button
+                                                onClick={el?.onClick}
+                                                className={`${
+                                                    active
+                                                        ? "bg-blue-500 text-white"
+                                                        : "text-gray-900"
+                                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                                             >
-                                                <div className="w-6 h-6 rounded-full text-white flex items-center justify-center bg-violet-600">
-                                                    <span className="text-center text-[10px]">
-                                                        {getInitials(user.name)}
-                                                    </span>
-                                                </div>
-                                                <span>{user.name}</span>
-                                            </div>
-                                            {selected ? (
-                                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                                    <MdCheck
-                                                        className="h-5 w-5"
-                                                        aria-hidden="true"
-                                                    />
-                                                </span>
-                                            ) : null}
-                                        </>
+                                                {el.icon}
+                                                {el.label}
+                                            </button>
+                                        )}
+                                    </Menu.Item>
+                                ))}
+                            </div>
+
+                            <div className="px-1 py-1">
+                                <Menu.Item>
+                                    {({ active }) => (
+                                        <button
+                                            onClick={() => deleteClicks()}
+                                            className={`${
+                                                active
+                                                    ? "bg-blue-500 text-white"
+                                                    : "text-red-900"
+                                            } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                        >
+                                            <RiDeleteBin6Line
+                                                className="mr-2 h-5 w-5 text-red-400"
+                                                aria-hidden="true"
+                                            />
+                                            Delete
+                                        </button>
                                     )}
-                                </Listbox.Option>
-                            ))}
-                        </Listbox.Options>
+                                </Menu.Item>
+                            </div>
+                        </Menu.Items>
                     </Transition>
-                </div>
-            </Listbox>
-        </div>
+                </Menu>
+            </div>
+
+            <AddTask
+                open={openEdit}
+                setOpen={setOpenEdit}
+                task={task}
+                key={new Date().getTime()}
+            />
+
+            <AddSubTask open={open} setOpen={setOpen} />
+
+            <ConfirmatioDialog
+                open={openDialog}
+                setOpen={setOpenDialog}
+                onClick={deleteHandler}
+            />
+        </>
     )
 }
 
-export default UserList
+export default TaskDialog
