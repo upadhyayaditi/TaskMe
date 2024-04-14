@@ -37,7 +37,7 @@ const Users = () => {
             setSelected(null)
             setTimeout(() => {
                 setOpenAction(false)
-            }, 500)
+            }, 100)
         } catch (err) {
             console.log(err)
             toast.error(err?.data?.message || err.message)
@@ -53,7 +53,7 @@ const Users = () => {
 
             setTimeout(() => {
                 setOpenDialog(false)
-            }, 500)
+            }, 100)
         } catch (err) {
             console.log(err)
             toast.error(err?.data?.message || err.message)
