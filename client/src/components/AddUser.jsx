@@ -47,7 +47,7 @@ const AddUser = ({ open, setOpen, userData }) => {
 
             setTimeout(() => {
                 setOpen(false)
-            }, 1500)
+            }, 500)
         } catch (error) {
             toast.error("Something went wrong.")
         }

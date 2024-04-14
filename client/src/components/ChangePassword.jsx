@@ -28,7 +28,7 @@ const ChangePassword = ({ open, setOpen }) => {
 
             setTimeout(() => {
                 setOpen(false)
-            }, 1500)
+            }, 100)
         } catch (err) {
             console.log(err)
             toast.error(err?.data?.message || err.message)
